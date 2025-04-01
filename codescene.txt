@@ -1,0 +1,49 @@
+[SCENE START]
+
+(Dark screen, flickering cursor effect in GREEN)
+> System Check... OK
+> Secure Channel... ESTABLISHED
+> Location... Unknown Datastream
+
+(Faint BLUE lines trace network paths across the screen)
+
+VOICE (Dr. Aurora Server, calm but urgent, perhaps CYAN text):
+"Ranger... can you hear me? The network is unstable. Interference... strong."
+"Something big just happened. Project Chimera... it's gone dark."
+
+(Screen flashes RED briefly. ASCII depiction of fragmented data streams.)
+
+VOICE (Dr. Aurora Server):
+"Chimera wasn't just data; it was... potential. A new way to link minds, knowledge... safely. Or so we thought."
+"The Fog... they ripped it out. Not just deleted. *Excised*."
+"Worse... they left a signature. An old one. One I haven't seen in years."
+
+(A complex, glitchy ASCII symbol flashes - the Shadow Admin's mark - perhaps MAGENTA)
+
+VOICE (Dr. Aurora Server):
+"He's back. Or... someone using his methods. The Shadow Admin."
+"He believes information *must* be chaotic, uncontrolled. He thinks we're building cages."
+"We built Chimera to connect; he'll twist it to divide."
+
+(ASCII art: A stylized globe with RED 'infection' points spreading.)
+
+VOICE (Dr. Aurora Server):
+"The fragments of Chimera are scattered, hidden within complex digital systems worldwide. They're the 'artifacts' now."
+"Shadow Admin is hunting them too. If he reassembles Chimera with his own... modifications... it could destabilize global networks. Total information anarchy."
+"Your credentials... they're still valid. Your old rig... I've uploaded the latest trace protocols."
+
+(ASCII art: A simple representation of the Player's 'rig' or console.)
+
+VOICE (Dr. Aurora Server):
+"You're the only one with the background, the skills... the history... to understand how he thinks."
+"Find the artifacts. Secure them. Build countermeasures using the very cloud technologies he exploits."
+"Track him. Stop him. Before he plunges the world into digital shadows."
+
+(Prompt appears in YELLOW)
+Enter Your Ranger Handle: [INPUT]
+
+VOICE (Dr. Aurora Server):
+"Good luck, [Player Name]. The trail starts in Neo-Kyoto... where the first fragment vanished."
+"Watch your back. The Fog is everywhere. And he... he remembers you."
+
+[SCENE END]

@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Reminder App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        .notification {
+            transition: all 0.3s ease;
+            transform: translateY(100%);
+        }
+        .notification.show {
+            transform: translateY(0);
+        }
+        .reminder-item {
+            transition: all 0.3s ease;
+        }
+        .reminder-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .priority-high {
+            border-left: 4px solid #ef4444;
+        }
+        .priority-medium {
+            border-left: 4px solid #f59e0b;
+        }
+        .priority-low {
+            border-left: 4px solid #10b981;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Smart Reminder</h1>
+                <p class="text-gray-600">Never forget anything important again</p>
+            </div>
+            <div class="relative">
+                <button id="notification-btn" class="relative p-2 rounded-full bg-white shadow-md hover:bg-gray-100">
+                    <i class="fas fa-bell text-blue-500"></i>
+                    <span id="notification-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                </button>
+                <div id="notification-dropdown" class="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10 hidden">
+                    <div class="p-2 border-b">
+                        <h3 class="font-semibold text-gray-700">Notifications</h3>
+                    </div>
+                    <div id="notification-list" class="max-h-60 overflow-y-auto">
+                        <!-- Notifications will appear here -->
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Notification Toast -->
+        <div id="notification-toast" class="notification fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg max-w-xs hidden">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-bell text-yellow-500 text-xl"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-gray-900" id="toast-title">Reminder</h3>
+                    <p class="mt-1 text-sm text-gray-500" id="toast-message">Your reminder is due!</p>
+                </div>
+                <button id="close-toast" class="ml-4 text-gray-400 hover:text-gray-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+            <!-- Form Section -->
+            <div class="p-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                <h2 class="text-xl font-semibold mb-4">Add New Reminder</h2>
+                <form id="reminder-form" class="space-y-4">
+                    <div>
+                        <label for="reminder-text" class="block text-sm font-medium">What do you want to be reminded of?</label>
+                        <input type="text" id="reminder-text" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2 text-gray-800">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="reminder-date" class="block text-sm font-medium">Date</label>
+                            <input type="date" id="reminder-date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2 text-gray-800">
+                        </div>
+                        <div>
+                            <label for="reminder-time" class="block text-sm font-medium">Time</label>
+                            <input type="time" id="reminder-time" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2 text-gray-800">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="reminder-priority" class="block text-sm font-medium">Priority</label>
+                        <select id="reminder-priority" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2 text-gray-800">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-4 py-2 bg-white text-blue-600 rounded-md font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200 flex items-center">
+                            <i class="fas fa-plus-circle mr-2"></i> Add Reminder
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Reminders List -->
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">Your Reminders</h2>
+                    <div class="flex space-x-2">
+                        <button id="sort-date" class="px-3 py-1 bg-gray-100 rounded-md text-sm hover:bg-gray-200">
+                            <i class="fas fa-calendar-alt mr-1"></i> Sort by Date
+                        </button>
+                        <button id="sort-priority" class="px-3 py-1 bg-gray-100 rounded-md text-sm hover:bg-gray-200">
+                            <i class="fas fa-exclamation-circle mr-1"></i> Sort by Priority
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="reminders-container" class="space-y-3">
+                    <!-- Reminders will be added here -->
+                    <div id="no-reminders" class="text-center py-8 text-gray-500">
+                        <i class="fas fa-clock text-4xl mb-2"></i>
+                        <p>No reminders yet. Add one above!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white p-4 rounded-lg shadow-md flex items-center">
+                <div class="bg-blue-100 p-3 rounded-full mr-4">
+                    <i class="fas fa-clock text-blue-500 text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Total Reminders</p>
+                    <p id="total-reminders" class="text-2xl font-bold text-gray-800">0</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-md flex items-center">
+                <div class="bg-green-100 p-3 rounded-full mr-4">
+                    <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Completed</p>
+                    <p id="completed-reminders" class="text-2xl font-bold text-gray-800">0</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-md flex items-center">
+                <div class="bg-yellow-100 p-3 rounded-full mr-4">
+                    <i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-gray-500 text-sm">Pending</p>
+                    <p id="pending-reminders" class="text-2xl font-bold text-gray-800">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const reminderForm = document.getElementById('reminder-form');
+            const remindersContainer = document.getElementById('reminders-container');
+            const noRemindersElement = document.getElementById('no-reminders');
+            const notificationBtn = document.getElementById('notification-btn');
+            const notificationDropdown = document.getElementById('notification-dropdown');
+            const notificationList = document.getElementById('notification-list');
+            const notificationCount = document.getElementById('notification-count');
+            const notificationToast = document.getElementById('notification-toast');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
+            const closeToast = document.getElementById('close-toast');
+            const totalRemindersElement = document.getElementById('total-reminders');
+            const completedRemindersElement = document.getElementById('completed-reminders');
+            const pendingRemindersElement = document.getElementById('pending-reminders');
+            const sortDateBtn = document.getElementById('sort-date');
+            const sortPriorityBtn = document.getElementById('sort-priority');
+            
+            // State
+            let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+            let checkInterval;
+            
+            // Initialize
+            updateStats();
+            renderReminders();
+            renderNotifications();
+            startReminderChecker();
+            
+            // Event Listeners
+            reminderForm.addEventListener('submit', addReminder);
+            notificationBtn.addEventListener('click', toggleNotifications);
+            closeToast.addEventListener('click', hideToast);
+            sortDateBtn.addEventListener('click', () => sortReminders('date'));
+            sortPriorityBtn.addEventListener('click', () => sortReminders('priority'));
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
+                    notificationDropdown.classList.add('hidden');
+                }
+            });
+            
+            // Functions
+            function addReminder(e) {
+                e.preventDefault();
+                
+                const text = document.getElementById('reminder-text').value;
+                const date = document.getElementById('reminder-date').value;
+                const time = document.getElementById('reminder-time').value;
+                const priority = document.getElementById('reminder-priority').value;
+                
+                const reminder = {
+                    id: Date.now(),
+                    text,
+                    date,
+                    time,
+                    priority,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+                
+                reminders.push(reminder);
+                saveReminders();
+                renderReminders();
+                updateStats();
+                
+                // Reset form
+                reminderForm.reset();
+                document.getElementById('reminder-date').value = '';
+                document.getElementById('reminder-time').value = '';
+                
+                // Show success feedback
+                showToast('Reminder Added', `"${text}" has been added to your reminders.`);
+            }
+            
+            function renderReminders() {
+                if (reminders.length === 0) {
+                    noRemindersElement.classList.remove('hidden');
+                    remindersContainer.innerHTML = '';
+                    return;
+                }
+                
+                noRemindersElement.classList.add('hidden');
+                
+                // Sort by date by default
+                sortReminders('date');
+            }
+            
+            function createReminderElement(reminder) {
+                const reminderElement = document.createElement('div');
+                reminderElement.className = `reminder-item bg-white p-4 rounded-lg shadow-sm flex justify-between items-center priority-${reminder.priority}`;
+                reminderElement.dataset.id = reminder.id;
+                
+                const dueDate = new Date(`${reminder.date}T${reminder.time}`);
+                const now = new Date();
+                const isOverdue = !reminder.completed && dueDate < now;
+                
+                const priorityColors = {
+                    high: 'text-red-500',
+                    medium: 'text-yellow-500',
+                    low: 'text-green-500'
+                };
+                
+                const priorityText = {
+                    high: 'High',
+                    medium: 'Medium',
+                    low: 'Low'
+                };
+                
+                reminderElement.innerHTML = `
+                    <div class="flex items-center">
+                        <button class="complete-btn mr-3 p-2 rounded-full ${reminder.completed ? 'bg-green-100 text-green-500' : 'bg-gray-100 text-gray-400'} hover:bg-green-100 hover:text-green-500 transition-colors">
+                            <i class="fas ${reminder.completed ? 'fa-check-circle' : 'fa-circle'}"></i>
+                        </button>
+                        <div>
+                            <p class="font-medium ${reminder.completed ? 'line-through text-gray-400' : 'text-gray-800'}">${reminder.text}</p>
+                            <div class="flex items-center text-sm text-gray-500 mt-1">
+                                <i class="fas fa-calendar-day mr-1"></i>
+                                <span>${formatDate(dueDate)} at ${formatTime(dueDate)}</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas ${priorityColors[reminder.priority]} mr-1"></i>
+                                <span>${priorityText[reminder.priority]}</span>
+                                ${isOverdue && !reminder.completed ? 
+                                    '<span class="ml-2 bg-red-100 text-red-500 px-2 py-0.5 rounded-full text-xs">Overdue</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="delete-btn p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                // Add event listeners to buttons
+                const completeBtn = reminderElement.querySelector('.complete-btn');
+                const deleteBtn = reminderElement.querySelector('.delete-btn');
+                
+                completeBtn.addEventListener('click', () => toggleComplete(reminder.id));
+                deleteBtn.addEventListener('click', () => deleteReminder(reminder.id));
+                
+                return reminderElement;
+            }
+            
+            function toggleComplete(id) {
+                const index = reminders.findIndex(r => r.id === id);
+                if (index !== -1) {
+                    reminders[index].completed = !reminders[index].completed;
+                    saveReminders();
+                    renderReminders();
+                    updateStats();
+                    
+                    const reminder = reminders[index];
+                    const action = reminder.completed ? 'completed' : 'marked as pending';
+                    showToast('Reminder Updated', `"${reminder.text}" has been ${action}.`);
+                }
+            }
+            
+            function deleteReminder(id) {
+                reminders = reminders.filter(r => r.id !== id);
+                saveReminders();
+                renderReminders();
+                updateStats();
+                showToast('Reminder Deleted', 'The reminder has been removed.');
+            }
+            
+            function saveReminders() {
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+            }
+            
+            function updateStats() {
+                totalRemindersElement.textContent = reminders.length;
+                completedRemindersElement.textContent = reminders.filter(r => r.completed).length;
+                pendingRemindersElement.textContent = reminders.filter(r => !r.completed).length;
+            }
+            
+            function formatDate(date) {
+                return date.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            }
+            
+            function formatTime(date) {
+                return date.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            }
+            
+            function toggleNotifications() {
+                notificationDropdown.classList.toggle('hidden');
+                
+                // Mark notifications as read when dropdown is opened
+                if (!notificationDropdown.classList.contains('hidden')) {
+                    notifications.forEach(n => n.unread = false);
+                    saveNotifications();
+                    updateNotificationBadge();
+                }
+            }
+            
+            function renderNotifications() {
+                if (notifications.length === 0) {
+                    notificationList.innerHTML = '<p class="text-gray-500 p-4 text-center">No notifications yet</p>';
+                    return;
+                }
+                
+                notificationList.innerHTML = notifications
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .map(notification => `
+                        <div class="p-3 border-b ${notification.unread ? 'bg-blue-50' : 'bg-white'}">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-medium text-gray-800">${notification.title}</p>
+                                    <p class="text-sm text-gray-600">${notification.message}</p>
+                                </div>
+                                <span class="text-xs text-gray-400">${formatTimeAgo(new Date(notification.timestamp))}</span>
+                            </div>
+                        </div>
+                    `)
+                    .join('');
+            }
+            
+            function addNotification(title, message) {
+                const notification = {
+                    id: Date.now(),
+                    title,
+                    message,
+                    timestamp: new Date().toISOString(),
+                    unread: true
+                };
+                
+                notifications.unshift(notification);
+                if (notifications.length > 20) {
+                    notifications.pop();
+                }
+                
+                saveNotifications();
+                renderNotifications();
+                updateNotificationBadge();
+                
+                // Show toast notification
+                showToast(title, message);
+            }
+            
+            function saveNotifications() {
+                localStorage.setItem('notifications', JSON.stringify(notifications));
+            }
+            
+            function updateNotificationBadge() {
+                const unreadCount = notifications.filter(n => n.unread).length;
+                notificationCount.textContent = unreadCount;
+                
+                if (unreadCount > 0) {
+                    notificationCount.classList.remove('hidden');
+                    notificationBtn.classList.add('pulse-animation');
+                } else {
+                    notificationCount.classList.add('hidden');
+                    notificationBtn.classList.remove('pulse-animation');
+                }
+            }
+            
+            function showToast(title, message) {
+                toastTitle.textContent = title;
+                toastMessage.textContent = message;
+                
+                notificationToast.classList.remove('hidden');
+                notificationToast.classList.add('show');
+                
+                // Auto-hide after 5 seconds
+                setTimeout(hideToast, 5000);
+            }
+            
+            function hideToast() {
+                notificationToast.classList.remove('show');
+                setTimeout(() => notificationToast.classList.add('hidden'), 300);
+            }
+            
+            function formatTimeAgo(date) {
+                const seconds = Math.floor((new Date() - date) / 1000);
+                
+                let interval = Math.floor(seconds / 31536000);
+                if (interval >= 1) return interval + "y ago";
+                
+                interval = Math.floor(seconds / 2592000);
+                if (interval >= 1) return interval + "mo ago";
+                
+                interval = Math.floor(seconds / 86400);
+                if (interval >= 1) return interval + "d ago";
+                
+                interval = Math.floor(seconds / 3600);
+                if (interval >= 1) return interval + "h ago";
+                
+                interval = Math.floor(seconds / 60);
+                if (interval >= 1) return interval + "m ago";
+                
+                return Math.floor(seconds) + "s ago";
+            }
+            
+            function startReminderChecker() {
+                // Clear any existing interval
+                if (checkInterval) clearInterval(checkInterval);
+                
+                // Check every minute
+                checkInterval = setInterval(checkReminders, 60000);
+                
+                // Also check immediately
+                checkReminders();
+            }
+            
+            function checkReminders() {
+                const now = new Date();
+                
+                reminders.forEach(reminder => {
+                    if (reminder.completed) return;
+                    
+                    const dueDate = new Date(`${reminder.date}T${reminder.time}`);
+                    const timeDiff = dueDate - now;
+                    
+                    // If the reminder is due within the next minute (or is overdue)
+                    if (timeDiff <= 60000 && timeDiff > -60000) {
+                        // Check if we've already notified for this reminder
+                        if (!reminder.notified) {
+                            addNotification('Reminder Due', `"${reminder.text}" is due now!`);
+                            
+                            // Mark as notified
+                            reminder.notified = true;
+                            saveReminders();
+                        }
+                    }
+                });
+            }
+            
+            function sortReminders(sortBy) {
+                if (reminders.length === 0) return;
+                
+                let sortedReminders = [...reminders];
+                
+                if (sortBy === 'date') {
+                    sortedReminders.sort((a, b) => {
+                        const dateA = new Date(`${a.date}T${a.time}`);
+                        const dateB = new Date(`${b.date}T${b.time}`);
+                        return dateA - dateB;
+                    });
+                    sortDateBtn.classList.add('bg-blue-100', 'text-blue-600');
+                    sortPriorityBtn.classList.remove('bg-blue-100', 'text-blue-600');
+                } else if (sortBy === 'priority') {
+                    const priorityOrder = { high: 3, medium: 2, low: 1 };
+                    sortedReminders.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
+                    sortPriorityBtn.classList.add('bg-blue-100', 'text-blue-600');
+                    sortDateBtn.classList.remove('bg-blue-100', 'text-blue-600');
+                }
+                
+                // Rebuild the reminders container
+                remindersContainer.innerHTML = '';
+                sortedReminders.forEach(reminder => {
+                    remindersContainer.appendChild(createReminderElement(reminder));
+                });
+            }
+            
+            // Set default date to today and time to next hour
+            const today = new Date();
+            const nextHour = new Date(today.getTime() + 60 * 60 * 1000);
+            
+            document.getElementById('reminder-date').valueAsDate = today;
+            document.getElementById('reminder-time').value = `${String(nextHour.getHours()).padStart(2, '0')}:${String(nextHour.getMinutes()).padStart(2, '0')}`;
+        });
+    </script>
+</body>
+</html>

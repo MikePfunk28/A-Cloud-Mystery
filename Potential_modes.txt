@@ -1,0 +1,3 @@
+*   **Campaign Mode:** The main story-driven experience.
+*   **Sandbox Mode:** Experiment freely with all discovered artifacts without resource/time constraints. Great for learning and testing architectures.
+*   **Challenge Mode:** Specific scenarios with tight constraints (e.g., "Migrate a legacy system to the cloud in 30 days with X budget," "Survive constant attacks from Shadow Admin for Y days").
