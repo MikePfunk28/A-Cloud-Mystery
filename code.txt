@@ -1,9 +1,0 @@
-1.  **Mission Briefing:** Receive a mission from Dr. Aurora Server (e.g., "Locate the 'DynamoDB Key' artifact rumored to be in the Dublin data archives").
-2.  **Plan & Prepare:** Check resources (Cloud Credits, Bandwidth, Team Expertise, Time). Equip relevant "tools" (already acquired Artifacts/Services). Choose a travel route on the world map.
-3.  **Journey Phase:** Travel between locations (consuming Time and Bandwidth). Encounter "Trail Challenges" (random events like DDoS Storms, Latency Fog, Instance Crashes, Budget Spikes) requiring resource expenditure or deploying specific AWS services temporarily to mitigate.
-4.  **Investigation Phase (Location):** Arrive at the destination (e.g., London, Tokyo, São Paulo - representing AWS Regions). Interact with local contacts, analyze simulated logs (using CloudWatch/CloudTrail concepts), solve environmental puzzles related to the local "digital culture" or tech landscape.
-5.  **Artifact Discovery:** Successfully completing the investigation yields a new Cloud Artifact (AWS Service card/item).
-6.  **Major Challenge/Puzzle:** Often involves using the newly acquired artifact, possibly in combination with others, to overcome a significant obstacle set by Shadow Admin or The Fog (e.g., build a resilient architecture to withstand an attack, optimize a database setup for cost).
-7.  **Architecture Integration:** Add the new artifact to your persistent "Cloud Ranger HQ" architecture. Optimize existing setups for cost, performance, and security using collected artifacts. This generates passive "Digital Revenue" (more Cloud Credits).
-8.  **Narrative Progression:** Uncover clues about The Fog's master plan and Shadow Admin's identity. Receive the next mission.
-9.  **Repeat.**

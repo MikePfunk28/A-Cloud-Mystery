@@ -1,2 +1,0 @@
-*   **Win Conditions:** Collect all major plot artifacts, build a target architecture defined by the final mission, uncover Shadow Admin's identity/stop The Fog's plan before the Time runs out.
-*   **Lose Conditions:** Run out of Time, run out of Cloud Credits and be unable to continue, fail too many critical missions/challenges.
