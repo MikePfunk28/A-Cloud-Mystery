@@ -1,0 +1,8 @@
+# requirements.txt
+
+# Terminal UI
+colorama==0.4.6
+
+# Testing (optional)
+pytest==7.3.1
+pytest-cov==4.1.0
